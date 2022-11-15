@@ -7,6 +7,7 @@
 import React from 'react';
 import App from './App'
 import { createRoot } from 'react-dom/client';//更新后的写法
+import { HashRouter } from "react-router-dom";
 const container = document.getElementById('root');
 const root = createRoot(container);
-root.render(<App />);
+root.render(<HashRouter><App /></HashRouter>);

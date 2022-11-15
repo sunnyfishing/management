@@ -27,7 +27,7 @@ const path = require('path')
 const devServer = {
   hot: true,
   port: 3000,
-  host: '127.0.0.1',
+  host: 'localhost',
   compress: true,
   open: true,
   proxy: {
