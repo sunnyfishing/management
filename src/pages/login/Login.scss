@@ -1,3 +1,183 @@
-.login{
-  color: pink
+.login-main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: url('../../styles/images/login/login_bg.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .login-cont {
+    width: 80%;
+    height: 90%;
+    background: url('../../styles/images/login/login_bg2.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    .login-data {
+      height: 90%;
+    }
+
+    .cont-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+
+      .login-main-right-title {
+        font-size: 32px;
+        font-family: Source Han Sans CN;
+        font-weight: bold;
+        color: #547BD5;
+        line-height: 48px;
+        padding-top: 73px;
+        padding-left: 81px;
+      }
+
+      .login-main-right-block {
+        margin: 61px 81px 0px 81px;
+
+        input {
+          width: 100%;
+          // padding: 15px 0;
+          border: none;
+          font-size: 18px;
+          outline: none;
+          border-bottom: 1px solid #547bd5;
+
+          input:focus {
+            outline: none;
+          }
+
+          input::-webkit-input-placeholder {
+            /*Webkit browsers*/
+            color: #dfdfdd;
+            font-size: 18px;
+          }
+
+          input:-moz-placeholder {
+            /*Mozilla Firefox 4 to 8*/
+            color: #dfdfdd;
+            font-size: 18px;
+          }
+
+          input::moz-placeholder {
+            /*Mozilla Firefox 19+*/
+            color: #dfdfdd;
+            font-size: 18px;
+          }
+
+          input:-ms-input-placeholder {
+            /*Internet Explorer 10+*/
+            color: #dfdfdd;
+            font-size: 18px;
+          }
+        }
+
+        .login-main-right-label {
+          font-size: 18px;
+          font-family: Source Han Sans CN;
+          font-weight: 400;
+          color: #333333;
+        }
+
+        .login-main-right-ps {
+          position: relative;
+
+          span {
+            position: absolute;
+            right: 0;
+            top: 0.5208rem;
+            display: block;
+            width: 1.5625rem;
+            height: 1.5625rem;
+            cursor: pointer;
+          }
+
+          .username-password {
+            width: 321px;
+            height: 32px;
+            border: 1px solid #999999;
+            border-radius: 8px;
+            padding-left: 10px;
+          }
+
+        }
+
+        .username-input {
+          width: 321px;
+          height: 32px;
+          border: 1px solid #999999;
+          border-radius: 8px;
+          padding-left: 10px;
+        }
+      }
+
+      .login-main-right-submit {
+        width: 355px;
+        text-align: center;
+        height: 85px;
+        line-height: 75px;
+        margin: 38px 65px 0 70px;
+        background: url('../../styles/images/login/login_btn.png') no-repeat;
+        background-size: 100% 100%;
+        cursor: pointer;
+        font-family: Source Han Sans CN;
+        font-weight: 400;
+        font-size: 29px;
+        padding-top: 12px;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+
+.scroll-number {
+  height: 32px;
+  line-height: 32px;
+  font-size: 40px;
+  font-family: DIN;
+  font-weight: bold;
+  color: #EA5413;
+  margin-bottom: 20px;
+
+}
+
+.statisContent {
+  position: fixed;
+  left: 50px;
+  top: 50px;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+
+  .number-list {
+    display: flex;
+
+    .number {
+      width: 26px;
+      height: 30px;
+      // border: 1px solid #333;
+      overflow: hidden;
+      color: #fff;
+      font-size: 24px;
+
+      span {
+        writing-mode: vertical-rl; // 将文本设置为垂直排列
+        text-orientation: upright; // 文本垂直排列时，可以改变文字朝向
+        transform: translateY(0%);
+      }
+
+      .dot {}
+    }
+  }
 }

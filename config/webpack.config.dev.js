@@ -33,7 +33,6 @@ const devServer = {
   proxy: {
     '/apiInterface': {
       target: 'http://aj.yuqing-ds.kf315.net/',
-      pathRewrite: { '': '' },
       changeOrigin: true,
     },
   }

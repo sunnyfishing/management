@@ -1,4 +1,5 @@
 @import '~antd/dist/antd.css';
+@import './styles//css/base.scss';
 
 #components-layout-demo-top-side-2 .logo {
   float: left;
