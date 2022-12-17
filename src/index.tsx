@@ -7,14 +7,20 @@
 import React from 'react';
 import App from './App'
 import stores from './store/index.js';
+import { ConfigProvider } from 'antd';  
+import zhCN from 'antd/es/locale/zh_CN';  // 配置语言
 import { Provider } from 'mobx-react';
 import { createRoot } from 'react-dom/client';//更新后的写法
+import {  LoginRouter } from './routers/router'
 import { HashRouter } from "react-router-dom";
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(<HashRouter>  
   <Provider {...stores}>
-    <App />
+    <ConfigProvider locale={zhCN}>
+      <App />
+      <LoginRouter/>
+    </ConfigProvider>
   </Provider>
   </HashRouter>); 
    // 用hashRouter包裹组件，让子组件可以使用 useNavigate

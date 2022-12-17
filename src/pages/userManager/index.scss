@@ -1,0 +1,125 @@
+.user-manager{
+  display: flex;
+  flex-direction: column;
+  .role-count{
+    margin: 20px;
+    .role-count-cont{
+      background: #fff;
+      width: 100%;
+      height: 100px;
+      display: flex;
+      justify-content: space-around;
+      .role-item{
+        font-size: 26px;
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        div{
+          text-align: center;
+        }
+      }
+    }
+  }
+  .user-cont{
+    background-color: #fff;
+    padding: 24px;
+    margin: 0 20px;
+    min-height: 600px;
+    .search-btn{
+      display: flex;
+      justify-content: space-between;
+      .btn{
+        display: flex;
+        .btn-new{
+          width: 80px;
+          height: 32px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: RGB(24, 144, 255);
+          color: #fff;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+      }
+      .search{
+        align-self: flex-end;
+        display: flex;
+        align-items: center;
+        div{
+          word-break: keep-all;
+        }
+        .ant-input{
+          height: 30px !important;
+        }
+      }
+    }
+    .cont-table{
+      min-height: calc(100% - 44px);
+      position: relative;
+      .disabled-delete{
+        color: gray;
+      }
+      .delete{
+        color: red;
+      }
+      .cont-pagination{
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  }
+}
+.add-user{
+  margin: 24px;
+  background: #fff;
+  padding: 20px;
+  .btn{
+    display: flex;
+  }
+  .user-type{
+    width: 65px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border: 1px solid #40a9ff;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+}
+.tend-no-tend{
+  color: green;
+  border: 1px solid green;
+  padding: 0 5px;
+  border-radius: 3px;
+}
+.tend-tend{
+  color: red;
+  border: 1px solid red;
+  padding: 0 5px;
+  border-radius: 3px;
+}
+.status-cont{
+  display: flex;
+  align-items: center;
+  .point {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+  }
+  .stop{
+    background-color: gray;
+  }
+  .start{
+    background-color: green;
+  }
+  .stop-text{
+    color: gray;
+  }
+  .open-text{
+    color: green;
+  }
+}

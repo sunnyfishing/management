@@ -26,14 +26,17 @@ const path = require('path')
 // }
 const devServer = {
   hot: true,
-  port: 3000,
+  port: 3001,
   host: 'localhost',
   compress: true,
   open: true,
   proxy: {
-    '/apiInterface': {
-      target: 'http://aj.yuqing-ds.kf315.net/',
+    '/api': {
+      target: 'http://192.168.20.188:15179',
       changeOrigin: true,
+      pathRewrite: {
+        '/api': ''
+      }
     },
   }
 }

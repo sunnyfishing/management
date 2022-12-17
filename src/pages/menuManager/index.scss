@@ -1,0 +1,69 @@
+.menu-manager{
+  margin: 20px;
+  padding: 20px;
+  background: #fff;
+  .menu-types{
+    display: flex;
+    align-items: center;
+    a{
+      font-size: 20px;
+      color: rgba(0, 0, 0, 0.85);
+    }
+    .divider{
+      font-size: 20px;
+      border-left: 1px solid rgba(0, 0, 0, 0.2);
+      margin-top: 5px;
+    }
+    .menu-types-active{
+      color: #90cbfb;
+    }
+  }
+  .btn-new{
+    width: 80px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: RGB(24, 144, 255);
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+}
+.status-cont{
+  display: flex;
+  align-items: center;
+  .point {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+  }
+  .stop{
+    background-color: gray;
+  }
+  .start{
+    background-color: green;
+  }
+  .stop-text{
+    color: gray;
+  }
+  .open-text{
+    color: green;
+  }
+}
+.disabled-delete{
+  color: gray;
+}
+.delete{
+  color: red;
+}
+.cont-pagination{
+  display: flex;
+  justify-content: flex-end;
+}
+.cont-pagination {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,0 +1,8 @@
+{
+  "cSpell.words": [
+    "antd",
+    "choosed",
+    "Popconfirm"
+  ],
+  "typescript.tsdk": "\"typescript.tsdk\": \"./node_modules/typescript/lib\""
+}

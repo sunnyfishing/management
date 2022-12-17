@@ -2,7 +2,7 @@ import React from 'react';
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu } from 'antd';
-import BreadcrumbAntd from './components/BreadcrumbAntd';
+import BreadcrumbAntd from './components/breadcrumbAntd/BreadcrumbAntd';
 import './App.css'
 
 const { Header, Content, Sider } = Layout;

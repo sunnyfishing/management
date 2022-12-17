@@ -15,6 +15,7 @@ module.exports = {
   entry: {
     app: './src/index.tsx',
   },
+  devtool: 'source-map',
   output: {
     path: path.resolve(__dirname, '../dist'),
     filename: '[name].[hash].js',
@@ -51,6 +52,10 @@ module.exports = {
       {
         test: /\.(jpe?g|png|gif|svg|woff|woff2|eot|ttf|otf)$/i,
         type: "asset/resource",
+        generator: {
+          //图片路径，存放在dist/imgs/原名+8位hash+后缀
+          filename: 'imgs/[name]_[hash:8][ext]'
+        }
       },
       // 如果想要把css单独打包出来——目前只有在webpack V4版本才支持使用该插件
       // {

@@ -20,7 +20,32 @@
 .header{
   display: flex;
   justify-content: space-between;
+  .user-info{
+    position: relative;
+    color: #fff;
+    cursor: pointer;
+    .logout{
+      position: absolute;
+      bottom: -40px;
+      color: #000;
+      right: -36px;
+      width: 80px;
+    }
+  }
+}
+.ant-layout{
+  overflow: hidden;
+  height: 100vh;
 }
 .ant-layout-sider-children{
-  height: calc(100vh - 64px);
+  height: calc(100vh - 50px);
+}
+.business-cont{
+  // height: 100vh;
+  height: calc(100vh - 90px);
+  overflow-y: auto;
+  width: 100%;
+}
+.ant-layout-header{
+  height: 50px !important;
 }

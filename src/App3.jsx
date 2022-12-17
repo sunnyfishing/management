@@ -2,33 +2,35 @@ import React, { useEffect, useState } from 'react';
 import { Layout, Menu } from 'antd';
 import BreadcrumbAntd from './components/breadcrumbAntd/BreadcrumbAntd';
 import CompanyMark from './components/companyMark/CompanyMark';
-import {LOGIN} from './api/api';
-import { useNavigate } from "react-router-dom";
-import { AppRouter, LoginRouter } from './routers/router'
+import { Navigate } from "react-router-dom";
+import { AppRouter } from './routers/router'
 import { menus } from './utils/menu'
 import './App.scss'
-import { postForm } from './utils/axios';
 
 const { Header, Content, Sider } = Layout;
 
-const App = () => {
-  let hash = location.hash
-
-  const [menusItems, setMenusItems] = useState([])
-  const [openKeys, setOpenKeys] = useState([])
-  const [selectedKeys, setSelectedKeys] = useState([])
-  const [isShowLogout, setIsShowLogout] = useState(false)
-  const [isShowApp, setIsShowApp] = useState(false)
-
-  const navigate = useNavigate();
-  const onMenuClick = ({ keyPath }) => {
-    navigate(`/${keyPath.reverse().join('/')}`);
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      menusItems: [],
+      openKeys: [],
+      selectedKeys: [],
+      isShowLogout: false
+    }
+    this.hash = location.hash
   }
 
-  const handleMenu = (list) => {
+  onMenuClick({keyPath}) {
+    console.log('this.props',this.props)
+    Navigate(`/${keyPath.reverse().join('/')}`)
+    // this.props.navigate(`/${keyPath.reverse().join('/')}`)
+  }
+
+  handleMenu(list) {
     return list.map(item => {
       if (item.children && item.children.length > 0) {
-        let children = handleMenu(item.children)  // 获取处理children之后的值
+        let children = this.handleMenu(item.children)  // 获取处理children之后的值
         children = Array.from(new Set(children)) // 去重，用来去除多个null
         let index = children.findIndex((item) => item === null)  // 找到为null的元素的下标
         if (index > -1) {
@@ -51,49 +53,53 @@ const App = () => {
     })
   }
 
-  const setTip = (e,type)=>{
+  setTip(e, type) {
     e.preventDefault()
-    console.log('type',type)
-    setIsShowLogout(!!type)
+    console.log('type', type)
+    // setIsShowLogout(!!type)
+    this.setState({
+      isShowLogout: !!type
+    })
+  }
+  toLogout() {
+
   }
 
-  const toLogout = ()=>{
-    postForm(LOGIN.logout).then(res=>{
-      if(res.state === 200) {
-        navigate('/login')
-      }
+  componentDidMount() {
+    let menusItems = this.handleMenu(menus)
+    // setMenusItems(menusItems)
+    this.setState({
+      openKeys: this.hash?.split('/')[1],
+      selectedKeys: this.hash?.split('/')[2],
+      menusItems
     })
   }
 
-  useEffect(() => {
-    setOpenKeys(hash?.split('/')[1])
-    setSelectedKeys(hash?.split('/')[2])
-  }, [hash])
-
-  useEffect(() => {
-    let menusItems = handleMenu(menus)
-    setMenusItems(menusItems)
-  }, [menus])
-  // onMouseOut={setTip(0)}
-  // onMouseOver={setTip(1)}
-
-  useEffect(()=>{
-    console.log('111',sessionStorage.getItem('platform-token'))
-    if(sessionStorage.getItem('platform-token')){
-      setIsShowApp(true)
+  shouldComponentUpdate() {
+    if (sessionStorage.getItem('platform-token')) {
+      return true
     }
-  },[sessionStorage.getItem('platform-token')])
-  return (
-    <div>
+    return false
+  }
+
+
+  render() {
+    const { 
+      menusItems,
+      openKeys,
+      selectedKeys,
+      isShowLogout } = this.state
+    if (!sessionStorage.getItem('platform-token')) {
+      return <></>
+    }
+    return <div>
       {
-        // isLogin ? 
-        isShowApp&&
         <Layout>
           <Header className="header">
             <img className="logo" />
-            <div className='user-info' onMouseEnter={(e)=>setTip(e,1)}  onMouseLeave={(e)=>setTip(e,0)}>
+            <div className='user-info' onMouseEnter={(e) => this.setTip(e, 1)} onMouseLeave={(e) => this.setTip(e, 0)}>
               admin
-              {isShowLogout && <div className='logout' onClick={toLogout}>
+              {isShowLogout && <div className='logout' onClick={() => this.toLogout()}>
                 退出登录
               </div>}
 
@@ -103,12 +109,12 @@ const App = () => {
             <Sider width={200} className="site-layout-background">
               <Menu
                 mode="inline"
-                defaultOpenKeys={['users','userManager']}
+                openKeys={openKeys}
                 selectedKeys={selectedKeys}
                 style={{ height: '100%', borderRight: 0 }}
                 items={menusItems}
                 theme="dark"
-                onClick={(itemObj) => { onMenuClick(itemObj) }}
+                onClick={(itemObj) => { this.onMenuClick(itemObj) }}
               />
             </Sider>
             <Layout>
@@ -122,10 +128,8 @@ const App = () => {
             </Layout>
           </Layout>
         </Layout>
-          // : <LoginRouter />
       }
     </div>
-
-  )
-};
+  }
+}
 export default App

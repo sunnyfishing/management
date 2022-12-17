@@ -1,0 +1,62 @@
+.message-manager{
+  display: flex;
+  flex-direction: column;
+  .message-cont {
+    margin: 24px;
+    background-color: #fff;
+    padding: 20px;
+    margin: 20px;
+    min-height: 750px;
+    .search-btn {
+      display: flex;
+      justify-content: space-between;
+
+      .btn {
+        display: flex;
+
+        .btn-new {
+          width: 80px;
+          height: 32px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: RGB(24, 144, 255);
+          color: #fff;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+      }
+
+      .search {
+        align-self: flex-end;
+        display: flex;
+        align-items: center;
+
+        div {
+          word-break: keep-all;
+        }
+
+        .ant-input {
+          height: 30px !important;
+        }
+      }
+    }
+    .cont-table {
+      min-height: calc(100% - 44px);
+      position: relative;
+  
+      .disabled-delete {
+        color: gray;
+      }
+  
+      .delete {
+        color: red;
+      }
+  
+      .cont-pagination {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  }
+}
