@@ -41,7 +41,7 @@ export default function RoleManager() {
  
   const columns: ColumnsType<DataType> = [
     {
-      title: '用户名',
+      title: '角色',
       dataIndex: 'roleName',
       key: 'roleName',
       render:(value)=>(<>

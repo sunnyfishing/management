@@ -12,8 +12,8 @@
   align-items: center;
 
   .login-cont {
-    width: 80%;
-    height: 90%;
+    width: 1500px;
+    height: 840px;
     background: url('../../styles/images/login/login_bg2.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -22,7 +22,8 @@
     justify-content: space-around;
 
     .login-data {
-      height: 80%;
+      height: 672px;
+      width: 475px;
     }
 
     .cont-right {

@@ -7,6 +7,7 @@ import RoleManager from '../pages/roleManager'
 import UserManager from '../pages/userManager'
 import AddUser from '../pages/userManager/AddUser'
 import MessageList from '../pages/messageList'
+import ReportManager from '../pages/reportManager/reportManager';
 
 export class AppRouter extends React.Component {
   constructor(props) {
@@ -21,6 +22,7 @@ export class AppRouter extends React.Component {
         <Route path='/users/menuManager' element={<MenuManager />} />
         <Route path='/users/roleManager' element={<RoleManager />} />
         <Route path='/users/messageList' element={<MessageList />} />
+        <Route path='/datas/reportManager' element={<ReportManager/>}></Route>
       </Routes>
   }
 }
@@ -30,6 +32,7 @@ export class LoginRouter extends React.Component {
   }
   render() {
     return <Routes>
+        <Route path='/'  element={<Login />} />
         <Route path='/login' element={<Login />} />
       </Routes>
   }

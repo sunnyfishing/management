@@ -18,6 +18,11 @@ const columns: ColumnsType<DataType> = [
     key: 'account',
   },
   {
+    title: '发送时间',
+    dataIndex: 'sendTime',
+    key: 'sendTime',
+  },
+  {
     title: '短信内容',
     dataIndex: 'message',
     key: 'message',
@@ -54,8 +59,8 @@ export default function MessageList() {
   const getData = () => {
     const params = {
       ...searchParams,
-      pageSize: 10,
-      current: 1
+      pageSize,
+      current
     }
     get(MESSAGE.list, params).then(res => {
       const { list, pagination } = res?.results || {}

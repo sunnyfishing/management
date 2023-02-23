@@ -2,49 +2,36 @@
 
 //   config/webpack.config.dev.js
 
-const webpackMerge = require('webpack-merge')
+const merge = require('webpack-merge')
 const baseConfig = require('./webpack.config.base')
 const path = require('path')
 
-/**
- * @type {import('webpack').WebpackOptionsNormalized}
- */
-// const devServer = {
-//   port: 3000,
-//   host: 'localhost',
-//   contentBase: path.join(__dirname, '../publich'),
-//   watchContentBase: true,
-//   publicPath: '/',
-//   compress: true,
-//   historyApiFallback: true,
-//   hot: true,
-//   clientLogLevel: 'error',
-//   // open: true,
-//   watchOptions: {
-//     ignored: /node_modules/,
-//   },
-// }
-const devServer = {
-  hot: true,
-  port: 3001,
-  host: 'localhost',
-  compress: true,
-  open: true,
-  proxy: {
-    '/api': {
-      target: 'http://192.168.20.188:15179',
-      changeOrigin: true,
-      pathRewrite: {
-        '/api': ''
-      }
-    },
-  }
+function resolve(relatedPath) {
+  return path.join(__dirname, relatedPath);
 }
 
-const devConfig = {
+const webpackConfigDev = {
   mode: 'development',
-  devServer: devServer,
-}
+  devtool: 'source-map',
+  devServer: {
+    contentBase: resolve('../src'), //是静态资源所在的路径，比如我们的模板index.html所在的路径，默认为项目根目录
+    historyApiFallback: true,
+    hot: true,  // 热更新
+    host: 'localhost',  
+    open: true,   //服务启动后默认在浏览器打开
+    port: 3001,   //打开的端口号
+    proxy: {
+      '/apiInterface/interface': {
+        target: 'http://snzx-ht.kf315.net/',
+        changeOrigin: true,
+        pathRewrite: {
+          // '/apiInterface/interface': ''
+        }
+      },
+    }
+  }
+};
 
-module.exports = webpackMerge.merge(baseConfig, devConfig)
+
+module.exports = merge(baseConfig, webpackConfigDev)
 

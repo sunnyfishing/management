@@ -105,3 +105,22 @@
   white-space: nowrap;
 
 }
+
+.modal-footer-btn{
+  display: flex;
+  justify-content: flex-end;
+  .footer-btn{
+    width: 64px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .active{
+    background-color: #1890ff;
+    color: #fff;
+  }
+  .de-active{
+    border: 1px solid #d9d9d9;
+  }
+}

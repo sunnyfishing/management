@@ -45,7 +45,7 @@ const breadcrumb: React.FC = (props: Props) => {
     <Breadcrumb className='bread-crumb'>
       {labelPath.map((item, index) => {
         return <Breadcrumb.Item key={index}>
-          {index === 0?item:<a href={`/#/${path.slice(0,index+1).join('/')}`}>{item}</a>}  
+          {(index === 0 || index === labelPath.length-1)?item:<a href={`/#/${path.slice(0,index+1).join('/')}`}>{item}</a>}  
         </Breadcrumb.Item>
       })
       }

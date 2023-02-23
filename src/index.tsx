@@ -24,3 +24,4 @@ root.render(<HashRouter>
   </Provider>
   </HashRouter>); 
    // 用hashRouter包裹组件，让子组件可以使用 useNavigate
+console.log('%c 版本号：%s','color:green;font-size:16px',require('../package.json').version)

@@ -20,18 +20,16 @@
 .header{
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  .logo{
+    height: 44px;
+  }
   .user-info{
     position: relative;
     color: #fff;
     cursor: pointer;
-    .logout{
-      position: absolute;
-      bottom: -40px;
-      color: #000;
-      right: -36px;
-      width: 80px;
-    }
   }
+  
 }
 .ant-layout{
   overflow: hidden;
@@ -48,4 +46,7 @@
 }
 .ant-layout-header{
   height: 50px !important;
+}
+.logout{
+  cursor: pointer;
 }

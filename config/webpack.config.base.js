@@ -5,11 +5,21 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent')
+const Happypack = require('happypack');
+const os = require('os');
 
+const isDev = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
 
 /**
  * @type {import('webpack').Configuration}
  */
+
+// 启用最大核心共享线程进行打包，TODO: 注意低配电脑打包会有问题，如有问题，将happyThreadPool移出再试
+const happyThreadPool = Happypack.ThreadPool({ size: os.cpus().length });
+
+function resolve(relatedPath) {
+  return path.join(__dirname, relatedPath);
+}
 
 module.exports = {
   entry: {
@@ -21,7 +31,10 @@ module.exports = {
     filename: '[name].[hash].js',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx','.json', '.scss'],
+    alias: {  // 引用别名
+      'Api': path.join(__dirname, '/../src/api'),
+    },
   },
   module: {
     rules: [
@@ -48,20 +61,19 @@ module.exports = {
           'sass-loader',
         ],
       },
-      // webpack5 内置 assets 类型，我们不需要额外安装插件就可以进行图片等资源文件的解析
       {
         test: /\.(jpe?g|png|gif|svg|woff|woff2|eot|ttf|otf)$/i,
-        type: "asset/resource",
-        generator: {
-          //图片路径，存放在dist/imgs/原名+8位hash+后缀
-          filename: 'imgs/[name]_[hash:8][ext]'
-        }
+        loader: 'url-loader',
+        options: {
+          limit: 8192,
+          name: 'img/[name]_[hash:8][ext]'
+        },
       },
       // 如果想要把css单独打包出来——目前只有在webpack V4版本才支持使用该插件
-      // {
-      //   test: /\.css$/i,
-      //   use: [MiniCssExtractPlugin.loader, 'css-loader'],
-      // },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
     ],
   },
   resolve: {
@@ -70,24 +82,36 @@ module.exports = {
   // 插件
   plugins: [
     new HtmlWebpackPlugin({
-      title: '管理后台',
-      template: path.resolve(__dirname, '../index.html'),
+      title: '三农在线管理后台',
+      template: path.join(__dirname, '../index.html'),
       filename: 'index.html',
     }),
-    new CleanWebpackPlugin(),
-    // 如果想要把css单独打包出来——目前只有在webpack V4版本才支持使用该插件
-    // new MiniCssExtractPlugin({
-    //   filename: 'css/[name].[hash].css',
-    // })
+    new MiniCssExtractPlugin({
+      filename: '[name]-test.css',	//控制从打包后的入口JS文件中提取CSS样式生成的CSS文件的名称
+      chunkFilename: '[name]-test.css',	//控制从打包后的非入口JS文件中提取CSS样式生成的CSS文件的名称。
+    }),
+    new Happypack({
+      id: 'jsx',
+      threads: 4, // 代表开启几个子进程去处理这一类型的文件,默认3
+      // 代表共享进程池，即多个 HappyPack 实例都使用同一个共享进程池中的子进程去处理任务，以防止资源占用过多。
+      // 注意：低配置电脑打包的代码，可能会存在问题，之前招商银行PC端遇到过，慎用
+      threadPool: happyThreadPool,
+      verbose: true, // 此项配置会影响打包速度,默认为true
+      loaders: [{
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-react', '@babel/preset-env'],
+          plugins: [
+            '@babel/plugin-syntax-dynamic-import',
+            ['@babel/plugin-proposal-decorators', { 'legacy': true }],
+            'transform-class-properties',
+          ],
+          cacheDirectory: true,
+        },
+        // exclude: /node_modules/,
+        include: resolve('src'),
+      }],
+    }),
   ],
-  // webpack5 引入了缓存来提高二次构建速度，我们只需要在 webpack 配置文件中加入如下代码即可开启缓存
-  cache: {
-    type: 'filesystem',
-    // 可选配置
-    buildDependencies: {
-      config: [__filename], // 当构建依赖的config文件（通过 require 依赖）内容发生变化时，缓存失效
-    },
-    name: 'development-cache',
-  },
 
 }

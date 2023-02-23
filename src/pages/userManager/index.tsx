@@ -1,12 +1,14 @@
 import React, { MouseEventHandler, useEffect, useState } from 'react'
-import { Select, Input, Table, Pagination, Popconfirm, Tooltip,message } from 'antd';
+import { Select, Input, Table, Pagination, Popconfirm, Tooltip, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useNavigate } from "react-router-dom";
 import type { PaginationProps } from 'antd';
 import RoleCount from './components/RoleCount'
 import './index.scss'
 import { get, postForm } from '../../utils/axios';
-import { USER,ROLE } from '../../api/api';
+import { USER, ROLE } from '../../api/api';
+import { inject, observer } from 'mobx-react';
+import MyTag from '../../components/myTag';
 
 interface RoleList {
   value: string,
@@ -25,9 +27,10 @@ interface DataType {
 
 
 
-const UserManager: React.FC = () => {
+const UserManager: React.FC = inject('staticStore')(observer((props: any) => {
+  const { staticStore } = props
+  const { sourceList, getSourceItem } = staticStore
   const [roleList, setRoleList] = useState([])
-  const [sourceList, setSourceList] = useState([])
   const [statusList, setStatusList] = useState([])
   const [searchParams, setSearchParams] = useState({})
   const [data, setData] = useState([])
@@ -48,24 +51,28 @@ const UserManager: React.FC = () => {
     },
     {
       title: '角色',
-      dataIndex: 'bbb',
-      key: 'bbb',
+      dataIndex: 'role',
+      key: 'role', render: (value,record) => <>
+        {record?.roleList.map((item: { roleName: any; }) =>item.roleName).join(',')}
+      </>
     },
-    { title: '来源', dataIndex: 'source', key: 'source',render:(v)=><>{v?'官网注册':'后台添加'}</> },
-    { title: '有效期至', dataIndex: ' validity', key: ' validity',render:(v,re)=><>{re.validityStart}-{re.validityEnd}</> },
-    { title: '联系方式', dataIndex: 'phone', key: 'phone' },
-    { title: '状态', dataIndex: 'status', key: 'status', render: (value) => <>
-    {!value ? <div className='status-cont'>
-      <span className='point stop'></span><span  className='stop-text'>停用</span>
-    </div>
-    : <div className='status-cont'>
-      <span className='point start'></span><span  className='open-text'>启用</span>
-    </div>}
-
-  </> },
+    { title: '来源', dataIndex: 'source', key: 'source', render: (v) => <>{getSourceItem(v)}</> },
+    { title: '手机号', dataIndex: 'phone', key: 'phone' },
+    { title: '邮箱', dataIndex: 'email', key: ' email' },
     {
-      title: '意向', dataIndex: 'intentionType', key: 'intentionType', render: (value,record) => <>
-        {value==='0' ? <span className='tend-no-tend'>暂无</span> : <Tooltip title={record.intentionDescription}>
+      title: '状态', dataIndex: 'status', key: 'status', render: (value) => <>
+        {!value ? <div className='status-cont'>
+          <span className='point stop'></span><span className='stop-text'>停用</span>
+        </div>
+          : <div className='status-cont'>
+            <span className='point start'></span><span className='open-text'>启用</span>
+          </div>}
+
+      </>
+    },
+    {
+      title: '意向', dataIndex: 'intentionType', key: 'intentionType', render: (value, record) => <>
+        {value === 'NONE' ? <span className='tend-no-tend'>暂无</span> : <Tooltip title={record.intentionDescription}>
           <span className='tend-tend'>有意向</span>
         </Tooltip>}
 
@@ -75,7 +82,7 @@ const UserManager: React.FC = () => {
       title: '修改时间',
       dataIndex: 'updateTime',
       key: 'updateTime',
-      sorter: (a, b) => a.updateTime - b.updateTime,
+      sorter: (a, b) => new Date(a.updateTime).getTime() - new Date(b.updateTime).getTime(),
       ellipsis: true,
     },
     {
@@ -84,11 +91,11 @@ const UserManager: React.FC = () => {
       dataIndex: 'userId',
       fixed: 'right',
       width: 200,
-      render: (value,record) => <>
+      render: (value, record) => <>
         <a className='mr14' onClick={() => checkData(value)}>查看</a>
-        <a className='mr14' onClick={() => gotoNew('edit',value)}>编辑</a>
+        <a className='mr14' onClick={() => gotoNew('edit', value)}>编辑</a>
         <Popconfirm
-          title={`确认${record.status ? '启用' : '停用'}该用户`}
+          title={`确认${!record.status ? '启用' : '停用'}该用户`}
           onConfirm={() => startStop(value, record.status)}
           okText="是"
           cancelText="否"
@@ -113,16 +120,22 @@ const UserManager: React.FC = () => {
 
 
   const checkData = (value: DataType) => {
+    sessionStorage.setItem('current', `${current}`)
     navigate(`/users/userManager/check/${value}`)
   }
   const deleteData = (value: DataType) => {
-    console.log('value', value)
-  }
-  const startStop = (value: string,status:number) => {
-    console.log('value', value)
-    postForm(USER.operate,{userId:value}).then(res=>{
+    postForm(USER.del, { userId: value }).then(res => {
       if (res.state === 200) {
-        message.success(`${status?'停用':'启用'}成功`)
+        message.success(`删除成功`)
+        getData()
+      }
+    })
+  }
+  const startStop = (value: string, status: number) => {
+    console.log('value', value)
+    postForm(USER.operate, { userId: value }).then(res => {
+      if (res.state === 200) {
+        message.success(`${status ? '停用' : '启用'}成功`)
         getData()
       }
     })
@@ -140,10 +153,10 @@ const UserManager: React.FC = () => {
       pageSize,
       current,
     }
-    get(USER.list,params).then(res=>{
+    get(USER.list, params).then(res => {
       if (res.state === 200) {
-        const {list=[],pagination={} } = res?.results
-        const {current,pageSize,total} = pagination
+        const { list = [], pagination = {} } = res?.results
+        const { current, pageSize, total } = pagination
         setPageSize(pageSize)
         setCurrent(current)
         setTotal(total)
@@ -165,61 +178,69 @@ const UserManager: React.FC = () => {
     setCurrent(current)
   };
 
-  const gotoNew = (type: string,id?:string) => {
+  const gotoNew = (type: string, id?: string) => {
     switch (type) {
       case 'add':
         navigate('/users/userManager/add')
         break;
       case 'edit':
         navigate(`/users/userManager/edit/${id}`)
+        sessionStorage.setItem('current', `${current}`)
         break;
     }
   }
 
-  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
-    console.log('e.target.value',e.target.value)
-    if(e.target.value === ''){
-      setSearchParams({ ...searchParams, search:''})
+  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('e.target.value', e.target.value)
+    if (e.target.value === '') {
+      setSearchParams({ ...searchParams, search: '' })
     }
   }
 
   const getRoles = () => {
-    const params={
-      current:1,
-      pageSize:100
+    const params = {
+      current: 1,
+      pageSize: 100
     }
-    get(ROLE.optionList,params).then(res=>{
-      const {list} = res?.results
+    get(ROLE.optionList, params).then(res => {
+      const { list } = res?.results
       setRoleList(list)
     })
   }
 
 
-  useEffect(()=>{
+  useEffect(() => {
     const statusList = [
-      {value:0,label:'停用'},
-      {value:1,label:'启用'},
+      { value: 0, label: '停用' },
+      { value: 1, label: '启用' },
     ]
     setStatusList(statusList)
-    const sourceList = [
-      {value:0,label:'后台添加'},
-      {value:1,label:'官网注册'},
-    ]
-    setSourceList(sourceList)
-  },[])
+  }, [])
 
-  
+
   useEffect(() => {
     getData()
   }, [searchParams, pageSize, current])
 
-  useEffect(()=>{
+  useEffect(() => {
     getRoles()
-  },[])
+  }, [])
 
+  useEffect(()=>{
+    setCurrent(Number(sessionStorage.getItem('current')) || 1)
+  },[sessionStorage.getItem('current')])
+
+  const getTags = (tags:string[])=>{
+    console.log(tags)
+  }
+
+  const validateInput = (value:string)=>{
+    return /^[a-zA-Z0-9]+$/.test(value)
+  }
 
   return (
     <div className='user-manager'>
+      {/* <MyTag sendTags = {getTags} validateInput={validateInput} defaultTags={[11,22,33]} isCheck={false}/> */}
       <div className="role-count">
         <RoleCount />
       </div>
@@ -235,7 +256,7 @@ const UserManager: React.FC = () => {
                 onChange={(value: string) => handleChange(value, 'roleId')}
                 options={roleList}
                 allowClear={true}
-                fieldNames={{label: 'roleName', value: 'roleId'}}
+                fieldNames={{ label: 'roleName', value: 'roleId' }}
               />
             </div>
             <div className=' mr50'>
@@ -260,17 +281,17 @@ const UserManager: React.FC = () => {
             </div>
           </div>
           <div className='search'>
-            <div>搜索：</div><Input size="small" placeholder="请输入用户名或联系方式" onPressEnter={onPressEnter} allowClear={true} onChange={(e)=>{onSearchChange(e)}}/>
+            <div>搜索：</div><Input size="small" placeholder="请输入用户名或联系方式" onPressEnter={onPressEnter} allowClear={true} onChange={(e) => { onSearchChange(e) }} />
           </div>
         </div>
         <div className='cont-table mt20'>
-          <Table columns={columns} dataSource={data} scroll={{ x: 1300 }} pagination={false} rowKey='userId'/>
+          <Table columns={columns} dataSource={data} scroll={{ x: 1300 }} pagination={false} rowKey='userId' />
           <div className='cont-pagination mt20'>
-            <Pagination showQuickJumper pageSize={pageSize} total={total} onChange={onChange} onShowSizeChange={onShowSizeChange} />
+            <Pagination showQuickJumper pageSize={pageSize} total={total} onChange={onChange} showSizeChanger={true} onShowSizeChange={onShowSizeChange} />
           </div>
         </div>
       </div>
     </div>
   )
-}
+}))
 export default UserManager

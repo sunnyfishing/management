@@ -12,12 +12,20 @@ export default function RoleCount() {
 
   const getData = ()=>{
     postForm(USER.userRoleAnalysis).then(res=>{
-      const {total,newTodayTotal,userRoleDetail} = res?.results
-      let roleList:RoleList[] = [
-        {count:total,label:'用户总量'},
-        {count:userRoleDetail['普通用户'],label:'普通用户'},
-        {count:newTodayTotal,label:'今日新增'},
-      ]
+      const {userTotal,newTodayTotal,userRoleDetail} = res?.results
+      let roleList:RoleList[] = userRoleDetail.map((item:any) =>({
+        count:item.total,label:item.roleName
+      }))
+      roleList.unshift({count:userTotal,label:'用户总量'})
+      roleList.push({count:newTodayTotal,label:'今日新增'})
+      // newTodayTotal.map(item =>({
+      //   label:''
+      // }))
+      // let roleList:RoleList[] = [
+      //   {count:total,label:'用户总量'},
+      //   {count:userRoleDetail['普通用户'],label:'普通用户'},
+      //   {count:newTodayTotal,label:'今日新增'},
+      // ]
       setRoleList(roleList)
     })
   }

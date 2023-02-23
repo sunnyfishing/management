@@ -12,6 +12,7 @@ import defaultIcon from '../../styles/images/menu/defaultIcon.png'
 import './index.scss'
 
 interface DataType {
+  menuType: number;
   key: React.Key;
   name: string;
   bbb: number;
@@ -50,7 +51,7 @@ const MenuManager = inject("staticStore")(observer((props: any) => {
       title: 'icon',
       dataIndex: 'icon',
       key: 'icon',
-      render: (v) => <img src={v || defaultIcon} />
+      render: (v,record) => {return record.menuType !== 2 ? <img className='table-icon' src={v || defaultIcon} /> :null }
     },
     { title: '菜单URL', dataIndex: 'funUri', key: 'funUri' },
     {
@@ -58,8 +59,7 @@ const MenuManager = inject("staticStore")(observer((props: any) => {
       dataIndex: 'menuType', 
       key: 'menuType',
       render: (v) => {
-        const item = menuTypes.find((item: any) => item.key === v)
-        return <>{item.label}</>
+        return <>{menuTypes[v]?.label}</>
       }
     },
     {
@@ -68,6 +68,9 @@ const MenuManager = inject("staticStore")(observer((props: any) => {
       key: 'sort',
       sorter: (a, b) => a.sort - b.sort,
       ellipsis: true,
+      render: (v) => {
+        return <>{v===-1?'-':v}</>
+      }
     },
     {
       title: '状态', dataIndex: 'status', key: 'status', render: (value) => <>
@@ -99,7 +102,7 @@ const MenuManager = inject("staticStore")(observer((props: any) => {
       render: (value,record) => <>
         <a className='mr14' onClick={() => gotoNew('edit',value)}>编辑</a>
         <Popconfirm
-          title={`确认${true ? '启用' : '停用'}该用户`}
+          title={`确认${!record.status ? '启用' : '停用'}该菜单`}
           onConfirm={() => startStop(value, record.status)}
           okText="是"
           cancelText="否"
@@ -141,7 +144,7 @@ const MenuManager = inject("staticStore")(observer((props: any) => {
     }
     postForm(MENU.operate,params).then(res => {
       if (res.state === 200) {
-        message.success(`${status?'停用':'启用'}成功`)
+        message.success(`${!status?'启用':'停用'}成功`)
         getData()
       }
     })
@@ -183,11 +186,25 @@ const MenuManager = inject("staticStore")(observer((props: any) => {
     get(MENU.list, params).then(res => {
       let { list,pagination } = res?.results
       const {current,pageSize,total} = pagination
+      list.forEach((item:any) =>{
+        filterEmptyChild(item)
+      })
       setPageSize(pageSize)
       setCurrent(current)
       setTotal(total)
       setData(list)
     })
+  }
+
+  const filterEmptyChild = (item:any)=>{
+    if(item.children.length === 0){
+      delete item.children
+      return
+    }else{
+      item.children.forEach((item1:any) =>{
+        filterEmptyChild(item1)
+      })
+    }
   }
 
   useEffect(() => {

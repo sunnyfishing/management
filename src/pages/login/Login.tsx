@@ -13,6 +13,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+    console.log('handleFormChange')
     let value = e.target.value && e.target.value.replace(' ', '');
     if (type === 'userName') {
       setUserName(value)
@@ -21,6 +22,8 @@ export default function Login() {
     }
   }
   const handleLoginClick = () => {
+    console.log('username',username)
+    console.log('password',password)
     if(!username || !password){
       message.warning('请输入用户名或密码')
       return
@@ -50,16 +53,17 @@ export default function Login() {
     }
   }
 
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    }
-  }, [])
+  // useEffect(() => {
+  //   document.addEventListener('keydown', handleKeyDown);
+  //   return () => {
+  //     document.removeEventListener('keydown', handleKeyDown);
+  //   }
+  // }, [])
 
   useEffect(()=>{
-    sessionStorage.removeItem('platform-token')
-  },[])
+    console.log('username',username)
+    console.log('password',password)
+  },[username,password])
 
   return (
     <div className="login-main">

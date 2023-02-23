@@ -33,7 +33,26 @@ const menus = [
         children:[]
       }
     ]
-  }
+  },
+  {
+    key: 'datas',
+    icon: React.createElement(UserOutlined),
+    label: '数据管理',
+    children: [
+      {
+        key: 'reportManager',
+        label: `报告管理`,
+
+        children:[
+          {key:'check',label:'查看',isShowInMenu:false},
+          {key:'edit',label:'编辑',isShowInMenu:false},
+          {key:'preview',label:'预览',isShowInMenu:false},
+          
+        ]
+      }
+    ]
+  },
+  
 ]
 
 export { menus }

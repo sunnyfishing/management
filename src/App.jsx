@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu,Popover } from 'antd';
 import BreadcrumbAntd from './components/breadcrumbAntd/BreadcrumbAntd';
 import CompanyMark from './components/companyMark/CompanyMark';
 import {LOGIN} from './api/api';
@@ -8,6 +8,7 @@ import { AppRouter, LoginRouter } from './routers/router'
 import { menus } from './utils/menu'
 import './App.scss'
 import { postForm } from './utils/axios';
+import logo from './styles/images/login/logo.png'
 
 const { Header, Content, Sider } = Layout;
 
@@ -22,6 +23,7 @@ const App = () => {
 
   const navigate = useNavigate();
   const onMenuClick = ({ keyPath }) => {
+    sessionStorage.removeItem('current')
     navigate(`/${keyPath.reverse().join('/')}`);
   }
 
@@ -60,6 +62,7 @@ const App = () => {
   const toLogout = ()=>{
     postForm(LOGIN.logout).then(res=>{
       if(res.state === 200) {
+        sessionStorage.removeItem('current')
         navigate('/login')
       }
     })
@@ -90,12 +93,11 @@ const App = () => {
         isShowApp&&
         <Layout>
           <Header className="header">
-            <img className="logo" />
+            <img className="logo" src={logo}/>
             <div className='user-info' onMouseEnter={(e)=>setTip(e,1)}  onMouseLeave={(e)=>setTip(e,0)}>
-              admin
-              {isShowLogout && <div className='logout' onClick={toLogout}>
-                退出登录
-              </div>}
+              <Popover content={<div  className='logout' onClick={toLogout}>退出登录</div>} >
+                admin
+              </Popover>
 
             </div>
           </Header>

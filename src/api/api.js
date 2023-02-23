@@ -9,6 +9,8 @@ export const MENU={
   'operate':'/hydra-opinion-platform/api/v1/manage/menu/operate',
   'del':'/hydra-opinion-platform/api/v1/manage/menu/del',
   'selectByMenuId':'/hydra-opinion-platform/api/v1/manage/menu/selectByMenuId',
+  'getMenuTreeByModule':'/hydra-opinion-platform/api/v1/manage/menu/getMenuTreeByModule',
+  'listRecord':'/hydra-opinion-platform/api/v1/manage/menu/listRecord',
 }
 export const ROLE={
   'list':'/hydra-opinion-platform/api/v1/manage/role/list',
@@ -16,6 +18,7 @@ export const ROLE={
   'del':'/hydra-opinion-platform/api/v1/manage/role/del',
   'saveRoleMenu':'/hydra-opinion-platform/api/v1/manage/role/saveRoleMenu',
   'getDetail':'/hydra-opinion-platform/api/v1/manage/role/getDetail',
+  'checkDefaultRole':'/hydra-opinion-platform/api/v1/manage/role/checkDefaultRole',
 }
 export const USER={
   'userRoleAnalysis':'/hydra-opinion-platform/api/v1/manage/user/userRoleAnalysis',
@@ -23,7 +26,13 @@ export const USER={
   'list':'/hydra-opinion-platform/api/v1/manage/user/list',
   'operate':'/hydra-opinion-platform/api/v1/manage/user/operate',
   'getUser':'/hydra-opinion-platform/api/v1/manage/user/getUser',
+  'del':'/hydra-opinion-platform/api/v1/manage/user/del',
+  'phone':'/hydra-opinion-platform/api/v1/manage/user/check/phone',
+  'email':'/hydra-opinion-platform/api/v1/manage/user/check/email',
 }
 export const MESSAGE={
   'list':'/hydra-opinion-platform/api/v1/manage/smsMessage/list',
+}
+export const UTILS={
+  'uploadImageUrl':'/hydra-opinion-platform/api/v1/common/hydraFile/uploadImageUrl',
 }

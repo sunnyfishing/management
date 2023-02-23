@@ -1,68 +1,81 @@
-import React, { Children, useEffect, useState } from 'react'
-import { Modal, Form, Input, Row, Col, Select, Tabs, Radio, InputNumber, TreeSelect } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { Modal, Form, Input, Row, Col, message, Radio, InputNumber, TreeSelect } from 'antd';
 import type { RadioChangeEvent } from 'antd';
-import { get, post,postForm, postJson } from '../../../utils/axios';
+import { get, postForm, postJson } from '../../../utils/axios';
 import { inject, observer } from "mobx-react";
-import { message, Upload } from 'antd';
 import { MENU } from '../../../api/api'
 import '../index.scss'
+import UploadImg from '../../../components/uploadFile/UploadImg';
 
 interface Params {
   "funUri": string,
   "icon"?: string,
   "menuId"?: string,
   "menuName": string,
-  "menuType": number,
+  "menuType": string,
   "module": string,
-  "parentMenuId": string,
-  "sort": number
+  "parentMenuId": string | any[],
+  "sort": number,
+}
+
+interface ListParams {
+  current: number,
+  pageSize: number,
+  module?: string,
+  menuType: string | number,
+  status:number
 }
 
 const inputWidth = 350
 
-const EditModal = inject("staticStore")(observer((props:any)=>{
-  const { modalType, setIsShowModal, activeKey ,getData,menuId,staticStore} = props
-  const {menuTypes} = staticStore
-  const [title, setTitle] = useState('')
-  const [menuOption, setMenuOption] = useState([])
-  // const [menuName, setMenuName] = useState<string>('');
-  // const [menuType, setMenuType] = useState<number>(0);
-  // const [parentMenuId, setParentMenuId] = useState(undefined);
-  // const [funUri, setFunUri] = useState<string>('');
-  // const [sort, setSort] = useState<number>(-1);
+const initialMenuOption:any=[
+  {
+    "menuId": "root",
+    "menuName": "官网",
+    children: []
+  }
+]
 
+
+const EditModal = inject("staticStore")(observer((props: any) => {
+  const { modalType, setIsShowModal, activeKey, getData, menuId, staticStore } = props
+  const { menuTypes } = staticStore
+  const isEdit: boolean = modalType === 'edit'
+  const [title, setTitle] = useState('')
+  const [menuOption, setMenuOption] = useState(initialMenuOption)
   const [formObj, setFormObj] = useState({
-    menuName:'',
-    menuType:0,
-    parentMenuId:undefined,
-    funUri:'',
-    sort:-1,
-    menuId:''
+    menuName: '',
+    menuType: '',
+    parentMenuId: 'root' || [],
+    funUri: '',
+    sort: -1,
+    menuId: '',
+    icon: '',
   })
   const [form] = Form.useForm();
 
 
   const handleOk = () => {
-    form.validateFields().then(values => {
-        const params: Params = {
-          ...formObj,
-          module: activeKey,
+    form.validateFields().then(() => {
+      const params: Params = {
+        ...formObj,
+        module: activeKey,
+        parentMenuId: formObj.parentMenuId === 'root' ? '' : formObj.parentMenuId
+      }
+      // console.log('Params',params)
+      postJson(MENU.saveMenu, params).then(res => {
+        if (res.state !== 200) {
+          message.error(res.msg)
+          return
         }
-        // const header = {'Content-Type': 'application/json;charset=UTF-8'}
-        console.log('params',params)
-        postJson(MENU.saveMenu, params).then(res => {
-          if(res.state !==200){
-            message.error(res.msg)
-            return
-          }
-          message.success('保存成功')
-          setTimeout(()=>{
-            setIsShowModal(false);
-            getData()
-          },1000)
-        })
+        message.success('保存成功')
+        setTimeout(() => {
+          setIsShowModal(false);
+          getData()
+        }, 1000)
       })
-      .catch(info => {
+    })
+      .catch((info: any) => {
         console.log('表单校验失败', info);
         return
       });
@@ -73,67 +86,110 @@ const EditModal = inject("staticStore")(observer((props:any)=>{
   };
 
   const onRadioChange = (e: RadioChangeEvent) => {
-    // setMenuType(Number(e.target.value));
-    setFormObj({...formObj,menuType:Number(e.target.value)})
+    if (e.target.value === 'CATALOGUE') {
+      setMenuOption(initialMenuOption)
+      setFormObj({ ...formObj, parentMenuId: 'root', menuType: e.target.value })
+      form.setFieldsValue({
+        parentMenuId: 'root'
+      })
+    } else {
+      getMenuList(e.target.value === 'MENU'?'CATALOGUE':e.target.value === 'OPERATION'?'MENU':'')
+      setFormObj({ ...formObj, menuType: e.target.value,parentMenuId: undefined })
+      form.setFieldsValue({
+        parentMenuId: undefined
+      })
+    }
   };
 
 
   const handleMenuChange = (value: string[]) => {
-    console.log(`selected ${value}`);
-    // setParentMenuId(value)
-    setFormObj({...formObj,parentMenuId:value})
+    setFormObj({ ...formObj, parentMenuId: value })
+    // 修改原数据操作
   };
 
-  const getMenuList = () => {
-    postForm(MENU.getUserMenuTree).then(res => {
+  const getMenuList = async (menuType:string) => {
+    const params: ListParams = {
+      current: 1,
+      pageSize: 100,
+      module: activeKey,
+      menuType,
+      status:1
+    }
+    await get(MENU.listRecord, params).then(res => {
       if (res.state !== 200) {
         message.error(res.msg)
         return
       }
-      const { results } = res
-      setMenuOption(results)
+      const list = res?.results?.list
+      setMenuOption(list)
     })
   }
 
-  const getDetail = ()=>{
-    get(MENU.selectByMenuId,{menuId}).then(res=>{
-      const {
-        menuName='',
-        menuType=0,
-        parentMenuId=undefined,
-        funUri='',
-        sort=-1,
-        menuId
+  const getDetail = () => {
+    get(MENU.selectByMenuId, { menuId }).then(async res => {
+      let {
+        menuName = '',
+        menuType = '',
+        parentMenuId = undefined || 'root',
+        funUri = '',
+        sort = -1,
+        menuId,
+        icon = ''
       } = res?.results || {}
+      if(menuType === 'CATALOGUE'){
+        parentMenuId = parentMenuId || 'root',
+        setMenuOption(initialMenuOption)
+      }else{
+        await getMenuList(menuType === 'MENU'?'CATALOGUE':menuType === 'OPERATION'?'MENU':'')
+      }
+      console.log('parentMenuId', parentMenuId)
       setFormObj({
         menuName,
         menuType,
+        // menuType:menuTypes[menuType].key,
         parentMenuId,
         funUri,
         sort,
         menuId,
+        icon,
       })
       form.setFieldsValue({
-          menuName,
-          menuType,
-          parentMenuId,
-          funUri,
-          sort
+        menuName,
+        menuType,
+        // menuType:menuTypes[menuType].key,
+        parentMenuId,
+        funUri,
+        sort,
+        icon
       })
     })
   }
 
-  useEffect(()=>{
-    console.log('formObj',formObj)
-  },[formObj])
+  const getUploadUrl = (url: string) => {
+    setFormObj((pre) => ({
+      ...pre,
+      icon: url
+    }))
+  }
 
   useEffect(() => {
-    getMenuList()
-  }, [])
+    console.log('formObj', formObj)
+  }, [formObj])
 
-  useEffect(()=>{
+  useEffect(() => {
     (modalType === 'edit' || modalType === 'check') && getDetail()
-  },[modalType])
+    if (modalType === 'add') {
+      form.setFieldsValue({
+        menuType: 'CATALOGUE',
+        parentMenuId: 'root' || [],
+      })
+      setFormObj({
+        ...formObj,
+        menuType: 'CATALOGUE',
+        parentMenuId: 'root' || [],
+      })
+    }
+  }, [modalType])
 
   useEffect(() => {
     switch (modalType) {
@@ -166,7 +222,7 @@ const EditModal = inject("staticStore")(observer((props:any)=>{
               name="menuName"
               rules={[{ required: true, message: '请检查输入是否正确！' }]}
             >
-              <Input maxLength={50} value={formObj.menuName} onChange={(e) => { setFormObj({...formObj,menuName:e.target.value}) }} style={{ width: inputWidth, marginRight: '20px' }} placeholder='请输入' />
+              <Input maxLength={50} value={formObj.menuName} onChange={(e: any) => { setFormObj({ ...formObj, menuName: e.target.value }) }} style={{ width: inputWidth, marginRight: '20px' }} placeholder='请输入' />
             </Form.Item>
           </Col>
         </Row>
@@ -177,8 +233,9 @@ const EditModal = inject("staticStore")(observer((props:any)=>{
               name="menuType"
               rules={[{ required: true, message: '请检查输入是否正确！' }]}
             >
-              <Radio.Group onChange={onRadioChange} value={formObj.menuType}>
-                {menuTypes.map((item: { key: any; label:any; }) => (<Radio value={item.key} key={item.key}>{item.label}</Radio>))}
+              <Radio.Group onChange={onRadioChange} value={formObj.menuType} defaultValue={formObj.menuType} disabled={isEdit}>
+                {Object.keys(menuTypes).map(item => <Radio value={item} key={item}>{menuTypes[item].label}</Radio>)}
+                {/* {Object.values(menuTypes).map((item: { key: any; label: any; }) => (<Radio value={item.key} key={item.key}>{item.label}</Radio>))} */}
               </Radio.Group>
             </Form.Item>
           </Col>
@@ -199,32 +256,46 @@ const EditModal = inject("staticStore")(observer((props:any)=>{
                 treeDefaultExpandAll
                 onChange={handleMenuChange}
                 treeData={menuOption}
+                disabled={formObj.menuType === 'CATALOGUE'}
                 fieldNames={{ label: 'menuName', value: 'menuId', children: 'children' }}
               />
             </Form.Item>
           </Col>
         </Row>
-        {(formObj.menuType === 0 || formObj.menuType === 1) && <>
-
+        {formObj.menuType === 'OPERATION' ?
           <Row>
             <Col span={24}>
               <Form.Item
-                label="菜单URL："
+                label="操作权限码："
                 name="funUri"
                 rules={[{ required: true, message: '请检查输入是否正确！' }]}
               >
-                <Input value={formObj.funUri} onChange={(e) => { setFormObj({...formObj,funUri:e.target.value}) }} maxLength={50} style={{ width: inputWidth }} placeholder='请输入' />
+                <Input maxLength={50} value={formObj.funUri} onChange={(e: any) => { setFormObj({ ...formObj, funUri: e.target.value }) }} style={{ width: inputWidth }} placeholder='请输入' />
               </Form.Item>
             </Col>
           </Row>
+          : <Row>
+            <Col span={24}>
+              <Form.Item
+                label='菜单URL：'
+                name="funUri"
+                rules={[{ required: true, message: '请检查输入是否正确！' }]}
+              >
+                <Input value={formObj.funUri} onChange={(e: any) => { setFormObj({ ...formObj, funUri: e.target.value }) }} maxLength={50} style={{ width: inputWidth }} placeholder='请输入' />
+              </Form.Item>
+            </Col>
+          </Row>}
+
+
+        {(formObj.menuType === 'CATALOGUE' || formObj.menuType === 'MENU') && <>
           <Row>
             <Col span={24}>
               <Form.Item
-                label="权重："
+                label="排序："
                 name="sort"
                 rules={[{ required: true, message: '请检查输入是否正确！' }]}
               >
-                <InputNumber value={formObj.sort} min={1} onChange={(v) => { setFormObj({...formObj,sort:v}) }} />
+                <InputNumber value={formObj.sort} min={1} max={10000} onChange={(v: number) => { setFormObj({ ...formObj, sort: v }) }} />
               </Form.Item>
             </Col>
           </Row>
@@ -234,6 +305,10 @@ const EditModal = inject("staticStore")(observer((props:any)=>{
                 label="icon："
                 name="icon"
               >
+                {/* <Upload {...upLoadProps}>
+                  {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                </Upload> */}
+                <UploadImg sendUrl={(url: string) => getUploadUrl(url)} url={formObj.icon} />
               </Form.Item>
             </Col>
           </Row>

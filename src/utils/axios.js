@@ -8,18 +8,18 @@ export const get = async (url,data) => {
     let headers = {
       'platform-token': sessionStorage.getItem('platform-token'),
     };
-    const res = await axios.get(`/api${url}`,{params:data,headers},);
+    const res = await axios.get(`/apiInterface/interface${url}`,{params:data,headers},);
     console.log('res', res);
     if (res.status === 200) {
       const {data} = res || {}
       const {state,msg,results} = data||{}
       if(state === 401){
         replaceUrl('/login')
-        return
+        return {}
       }
       if(state!==200){
         message.error(msg)
-        return
+        return {}
       }
       return data;
     }
@@ -34,7 +34,7 @@ export const postJson = async (url, data) => {
       'platform-token': sessionStorage.getItem('platform-token'),
     };
     const res = await axios
-      .post(`/api${url}`, data, {
+      .post(`/apiInterface/interface${url}`, data, {
         headers: {
           ...headers,
           'Content-Type': 'application/json;charset=UTF-8'
@@ -45,11 +45,11 @@ export const postJson = async (url, data) => {
       const {state,msg,results} = data||{}
       if(state === 401){
         replaceUrl('/login')
-        return
+        return {}
       }
       if(state!==200){
         message.error(msg)
-        return
+        return {}
       }
       return data;
     }
@@ -63,7 +63,7 @@ export const postForm = async (url, data) => {
       'platform-token': sessionStorage.getItem('platform-token'),
     };
     const res = await axios
-      .post(`/api${url}`, data, {
+      .post(`/apiInterface/interface${url}`, data, {
         headers: {
           ...headers,
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -74,11 +74,11 @@ export const postForm = async (url, data) => {
       const {state,msg,results} = data||{}
       if(state === 401){
         replaceUrl('/login')
-        return
+        return {}
       }
       if(state!==200){
         message.error(msg)
-        return
+        return {}
       }
       return data;
     }
@@ -93,7 +93,7 @@ export const post = async (url, data) => {
       'platform-token': sessionStorage.getItem('platform-token'),
     };
     const res = await axios
-      .post(`/api${url}`, data, {
+      .post(`/apiInterface/interface${url}`, data, {
         headers: {
           ...headers,
           'Content-Type': 'application/json;charset=UTF-8'
@@ -104,11 +104,11 @@ export const post = async (url, data) => {
       const {state,msg,results} = data||{}
       if(state === 401){
         replaceUrl('/login')
-        return
+        return {}
       }
       if(state!==200){
         message.error(msg)
-        return
+        return {}
       }
       return data;
     }
